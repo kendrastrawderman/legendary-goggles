@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreamLine Spotlight Roadmap</title>
+  <style>
+    :root {
+      --bg: #0b1020; --panel: #121932; --text: #f6f8ff; --muted: #aab3d0;
+      --line: rgba(255,255,255,0.09); --accent: #7c8cff;
+      --quick-win: #27c281; --major-project: #7c8cff; --fill-in: #f2b94b; --time-sinker: #ef6b73;
+      --now: #8ea0ff; --next: #63d1aa; --later: #c7a0ff; --cut: #ef6b73;
+      --shadow: 0 18px 50px rgba(0,0,0,0.22);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, rgba(124,140,255,.14), transparent 32rem),
+                  radial-gradient(circle at top right, rgba(99,209,170,.08), transparent 28rem), var(--bg);
+      color: var(--text); min-height: 100vh;
+    }
+    button { font: inherit; }
+    .shell { width: min(1400px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 56px; }
+    .hero { display:grid; grid-template-columns:1fr auto; gap:24px; align-items:end; margin-bottom:28px; }
+    .eyebrow { color:var(--accent); font-size:.78rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; margin-bottom:10px; }
+    h1 { margin:0; font-size:clamp(2rem,5vw,4.8rem); line-height:.96; letter-spacing:-.055em; }
+    .hero-copy { color:var(--muted); margin:18px 0 0; max-width:760px; line-height:1.65; }
+    .team-chip { padding:12px 16px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:rgba(255,255,255,.045); white-space:nowrap; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; margin:24px 0; padding:12px; border:1px solid var(--line); background:rgba(18,25,50,.84); backdrop-filter:blur(18px); border-radius:18px; position:sticky; top:12px; z-index:20; box-shadow:var(--shadow); }
+    .filters,.actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .filter-btn,.action-btn { border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--muted); border-radius:12px; padding:9px 12px; cursor:pointer; }
+    .filter-btn:hover,.action-btn:hover,.filter-btn.active { color:var(--text); background:rgba(124,140,255,.14); border-color:rgba(124,140,255,.5); }
+    .roadmap { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+    .lane,.cut-section { background:rgba(18,25,50,.72); border:1px solid var(--line); border-radius:22px; overflow:hidden; box-shadow:var(--shadow); }
+    .lane-header,.cut-header { padding:18px; border-bottom:1px solid var(--line); }
+    .lane-title-row,.cut-header { display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    .lane h2,.cut-header h2 { margin:0; font-size:1.05rem; letter-spacing:.08em; }
+    .lane[data-lane="NOW"] h2 { color:var(--now); } .lane[data-lane="NEXT"] h2 { color:var(--next); } .lane[data-lane="LATER"] h2 { color:var(--later); }
+    .lane-count { font-size:.78rem; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:5px 9px; }
+    .lane-subtitle,.cut-header p { margin:7px 0 0; color:var(--muted); font-size:.85rem; }
+    .cards,.cut-grid { padding:14px; display:grid; gap:12px; }
+    .cut-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .card { background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:16px; padding:16px; cursor:pointer; transition:.18s ease; }
+    .card:hover,.card:focus-visible,.card.expanded { border-color:rgba(124,140,255,.52); transform:translateY(-2px); box-shadow:0 14px 30px rgba(0,0,0,.22); }
+    .card-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .feature-id { color:var(--muted); font-size:.75rem; font-weight:800; letter-spacing:.1em; margin-bottom:6px; }
+    .feature-name { margin:0; font-size:1rem; line-height:1.35; }
+    .badge { flex:0 0 auto; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em; padding:6px 8px; border-radius:999px; color:#07111b; }
+    .quick-win { background:var(--quick-win); } .major-project { background:var(--major-project); } .fill-in { background:var(--fill-in); } .time-sinker { background:var(--time-sinker); }
+    .rationale { margin:13px 0 0; color:#d5daf0; font-size:.9rem; line-height:1.55; }
+    .details { display:grid; grid-template-rows:0fr; transition:.18s ease; margin-top:0; }
+    .details>div { overflow:hidden; } .card.expanded .details { grid-template-rows:1fr; margin-top:14px; }
+    .score-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .score { border:1px solid var(--line); border-radius:10px; padding:9px 10px; color:var(--muted); background:rgba(0,0,0,.14); font-size:.8rem; }
+    .score strong { display:block; color:var(--text); font-size:.98rem; margin-top:2px; }
+    .cut-section { margin-top:22px; border-color:rgba(239,107,115,.28); background:rgba(239,107,115,.06); }
+    .cut-header h2 { color:var(--cut); } .hidden { display:none!important; }
+    .legend { margin-top:22px; display:flex; flex-wrap:wrap; gap:12px; color:var(--muted); font-size:.78rem; }
+    .legend-item { display:flex; align-items:center; gap:7px; } .dot { width:9px; height:9px; border-radius:50%; }
+    @media(max-width:980px){.roadmap{grid-template-columns:1fr}.hero{grid-template-columns:1fr}}
+    @media(max-width:640px){.shell{width:calc(100% - 20px);padding-top:20px}.cut-grid{grid-template-columns:1fr}.card-top{flex-direction:column}}
+  </style>
+</head>
+<body>
+<main class="shell">
+<section class="hero"><div><div class="eyebrow">StreamLine Spotlight</div><h1>Product Roadmap</h1><p class="hero-copy">Prioritized around reducing Wanderers by helping overwhelmed long-time subscribers find something worth watching faster, while protecting Casual Browsers and Power Users.</p></div><div class="team-chip">2 engineers · 1 designer · NOW = 3 weeks</div></section>
+<section class="toolbar"><div class="filters">
+<button class="filter-btn active" data-filter="all">All</button><button class="filter-btn" data-filter="Quick Win">Quick Wins</button><button class="filter-btn" data-filter="Major Project">Major Projects</button><button class="filter-btn" data-filter="Fill-In">Fill-Ins</button><button class="filter-btn" data-filter="Time Sinker">Time Sinkers</button>
+</div><div class="actions"><button class="action-btn" id="expandAll">Expand all</button><button class="action-btn" id="collapseAll">Collapse all</button></div></section>
+<section class="roadmap">
+<article class="lane" data-lane="NOW"><header class="lane-header"><div class="lane-title-row"><h2>NOW</h2><span class="lane-count">2 features</span></div><p class="lane-subtitle">Current 3-week sprint</p></header><div class="cards"><article class="card" tabindex="0" data-quadrant="Major Project"><div class="card-top"><div><div class="feature-id">A4</div><h3 class="feature-name">Mood-Based Entry Point</h3></div><span class="badge major-project">Major Project</span></div><p class="rationale">Mood dramatically narrows an overwhelming catalog at the moment of entry, directly reducing wandering despite meaningful taxonomy and UX work.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>4 / 5</strong></div><div class="score">Effort<strong>3 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Time Sinker"><div class="card-top"><div><div class="feature-id">A9</div><h3 class="feature-name">Advanced Filter Engine</h3></div><span class="badge time-sinker">Time Sinker</span></div><p class="rationale">Filters can narrow the catalog for determined subscribers, but they also ask an already-overwhelmed Wanderer to do more decision work.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>3 / 5</strong></div><div class="score">Effort<strong>4 / 5</strong></div></div></div></div></article></div></article><article class="lane" data-lane="NEXT"><header class="lane-header"><div class="lane-title-row"><h2>NEXT</h2><span class="lane-count">3 features</span></div><p class="lane-subtitle">Following 1–2 sprints</p></header><div class="cards"><article class="card" tabindex="0" data-quadrant="Quick Win"><div class="card-top"><div><div class="feature-id">A1</div><h3 class="feature-name">Spotlight Curated Rail</h3></div><span class="badge quick-win">Quick Win</span></div><p class="rationale">A small hand-picked rail directly attacks poor curation by replacing catalog overload with a trusted, finite set of choices.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>5 / 5</strong></div><div class="score">Effort<strong>2 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Fill-In"><div class="card-top"><div><div class="feature-id">A3</div><h3 class="feature-name">Hidden Gem Badge</h3></div><span class="badge fill-in">Fill-In</span></div><p class="rationale">The badge cheaply adds a useful discovery signal, but it only helps once a title is already visible and does not solve curation by itself.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>3 / 5</strong></div><div class="score">Effort<strong>1 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Major Project"><div class="card-top"><div><div class="feature-id">A5</div><h3 class="feature-name">Personalized Spotlight Queue</h3></div><span class="badge major-project">Major Project</span></div><p class="rationale">A tightly personalized shortlist could be the strongest long-term reducer of Wanderers, but recommendation quality and infrastructure make it a substantial build.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>5 / 5</strong></div><div class="score">Effort<strong>5 / 5</strong></div></div></div></div></article></div></article><article class="lane" data-lane="LATER"><header class="lane-header"><div class="lane-title-row"><h2>LATER</h2><span class="lane-count">3 features</span></div><p class="lane-subtitle">Backlog</p></header><div class="cards"><article class="card" tabindex="0" data-quadrant="Major Project"><div class="card-top"><div><div class="feature-id">A2</div><h3 class="feature-name">'Why You'll Love This' Label</h3></div><span class="badge major-project">Major Project</span></div><p class="rationale">Personalized explanations can cut decision paralysis at the selection moment, but trustworthy AI-generated reasons require additional product and data complexity.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>5 / 5</strong></div><div class="score">Effort<strong>3 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Time Sinker"><div class="card-top"><div><div class="feature-id">A7</div><h3 class="feature-name">Curator Profiles</h3></div><span class="badge time-sinker">Time Sinker</span></div><p class="rationale">Following curators creates a new editorial-social model rather than directly removing the persona's immediate catalog-overload friction.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>2 / 5</strong></div><div class="score">Effort<strong>4 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Time Sinker"><div class="card-top"><div><div class="feature-id">A10</div><h3 class="feature-name">Offline Download (Spotlight)</h3></div><span class="badge time-sinker">Time Sinker</span></div><p class="rationale">Offline viewing helps after a title is chosen, but does nothing to solve the poor-curation moment that causes Wanderers to abandon discovery.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>1 / 5</strong></div><div class="score">Effort<strong>5 / 5</strong></div></div></div></div></article></div></article></section><section class="cut-section"><header class="cut-header"><div><h2>CUT LIST</h2><p>Explicitly out of scope for Spotlight.</p></div><span class="lane-count">2 features</span></header><div class="cut-grid"><article class="card" tabindex="0" data-quadrant="Time Sinker"><div class="card-top"><div><div class="feature-id">A6</div><h3 class="feature-name">Spotlight Digest Email</h3></div><span class="badge time-sinker">Time Sinker</span></div><p class="rationale">A weekly email may drive re-entry, but it sits outside the core in-app Moment of Misery and does not repair poor curation during browsing.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>2 / 5</strong></div><div class="score">Effort<strong>3 / 5</strong></div></div></div></div></article><article class="card" tabindex="0" data-quadrant="Time Sinker"><div class="card-top"><div><div class="feature-id">A8</div><h3 class="feature-name">Watch Party (Spotlight)</h3></div><span class="badge time-sinker">Time Sinker</span></div><p class="rationale">Synchronized viewing and chat are expensive and largely orthogonal to helping an overwhelmed subscriber decide what to watch.</p><div class="details"><div><div class="score-row"><div class="score">Value<strong>1 / 5</strong></div><div class="score">Effort<strong>5 / 5</strong></div></div></div></div></article></div></section>
+<div class="legend"><span class="legend-item"><span class="dot" style="background:var(--quick-win)"></span>Quick Win</span><span class="legend-item"><span class="dot" style="background:var(--major-project)"></span>Major Project</span><span class="legend-item"><span class="dot" style="background:var(--fill-in)"></span>Fill-In</span><span class="legend-item"><span class="dot" style="background:var(--time-sinker)"></span>Time Sinker</span></div>
+</main>
+<script>
+const cards=[...document.querySelectorAll(".card")];
+cards.forEach(c=>{c.addEventListener("click",()=>c.classList.toggle("expanded"));c.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.classList.toggle("expanded")}})});
+document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");const f=b.dataset.filter;cards.forEach(c=>c.classList.toggle("hidden",f!=="all"&&c.dataset.quadrant!==f));document.querySelectorAll(".lane").forEach(l=>l.classList.toggle("hidden",!l.querySelector(".card:not(.hidden)")));const s=document.querySelector(".cut-section");s.classList.toggle("hidden",!s.querySelector(".card:not(.hidden)"))}));
+document.getElementById("expandAll").onclick=()=>cards.filter(c=>!c.classList.contains("hidden")).forEach(c=>c.classList.add("expanded"));
+document.getElementById("collapseAll").onclick=()=>cards.forEach(c=>c.classList.remove("expanded"));
+</script></body></html>
